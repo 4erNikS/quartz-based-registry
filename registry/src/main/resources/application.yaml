@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: product-build-registry
+  datasource:
+    platform: postgres
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      max-lifetime: 300000
+      leak-detection-threshold: 2000
+    username: "postgres"
+    password: "postgres"
+    url: "jdbc:postgresql://127.0.0.1:5432/product_registry?charSet=LATIN1&useSSL=false&useAffectedRows=true&prepareThreshold=0"
+  quartz:
+    job-store-type: jdbc #Database Mode
+    jdbc:
+      initialize-schema: always
+
+  liquibase:
+    enabled: true
+    changeLog: "/db/db.changelog-master.yaml"
+
+client:
+  productsInfoUrl: "https://data.services.jetbrains.com/products"
+  productReleaseInfoUrl: "https://data.services.jetbrains.com/products?release.type=eap,rc,release&fields=code,releases&code="

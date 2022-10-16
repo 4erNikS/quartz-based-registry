@@ -1,0 +1,4 @@
+rootProject.name = 'product-builds-registry'
+
+include("registry")
+include("contract")
