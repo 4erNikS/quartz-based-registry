@@ -15,4 +15,6 @@ interface ProductVersionDataService {
     fun getVersionForProcessing(): ProductVersion?
 
     fun finishVersionProcessing(distrInfo: String, version: ProductVersion)
+
+    fun freeVersionForProcessingInCaseOfError(version: ProductVersion)
 }

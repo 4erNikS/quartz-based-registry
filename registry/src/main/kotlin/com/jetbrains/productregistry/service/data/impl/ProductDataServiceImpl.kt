@@ -18,7 +18,7 @@ class ProductDataServiceImpl(
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     override fun getProductForVersioningScan(): Product? {
-        val product = productRepository.findFirstByLockOrderByLastUpdatedDesc(false)
+        val product = productRepository.findFirstByLockOrderByLastUpdatedAsc(false)
         product?.let {
             if(it.lock) {
                 log.warn("Product is locked by another instance. Skipping...")

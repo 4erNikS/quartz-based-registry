@@ -36,7 +36,7 @@ class ProductVersionDataServiceImpl(
 
     override fun getVersionForProcessing(): ProductVersion? {
         productVersionRepository
-            .findFirstByLockOrderAndStatusByLastUpdatedDesc(
+            .findFirstByLockAndStatusOrderByLastUpdatedDesc(
                 false, VersionProcessingStatus.NEED_UPDATE
             )?.let{
             if(it.lock) {
@@ -53,6 +53,14 @@ class ProductVersionDataServiceImpl(
         version.lock = false
         version.status = VersionProcessingStatus.UPLOADED
         version.lastUpdated = Timestamp.from(ZonedDateTime.now().toInstant())
+        version.productInfo = distrInfo
+        productVersionRepository.save(version)
+    }
+
+    override fun freeVersionForProcessingInCaseOfError(version: ProductVersion) {
+        version.lock = false
+        version.status = VersionProcessingStatus.NEED_UPDATE
+        productVersionRepository.save(version)
     }
 
     private fun ProductVersion.updateVersionIfNeeded(versionInfo: VersionInfoDto) {

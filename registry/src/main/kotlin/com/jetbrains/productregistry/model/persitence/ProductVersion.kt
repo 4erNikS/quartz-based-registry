@@ -14,7 +14,7 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "products")
-data class ProductVersion(
+class ProductVersion(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long = 0,
@@ -26,7 +26,7 @@ data class ProductVersion(
      * Concatenation of date, release type and product code
      */
     @Column(unique = true)
-    val versionCode: String,
+    var versionCode: String = "",
 
     var lock: Boolean = false,
 
@@ -34,17 +34,17 @@ data class ProductVersion(
     var status: VersionProcessingStatus = VersionProcessingStatus.NEED_UPDATE,
 
     @Enumerated(EnumType.STRING)
-    val type: VersionType,
+    var type: VersionType = VersionType.RELEASE,
 
     var productInfo: String? = null,
 
-    var distrLink: String,
+    var distrLink: String = "",
 
-    var checksumCheckLink: String,
+    var checksumCheckLink: String = "",
 
-    var releaseDate: Date,
+    var releaseDate: Date = Date(),
 
-    var sizeInfo: Long,
+    var sizeInfo: Long = 0L,
 
     var lastUpdated: Timestamp = Timestamp.from(ZonedDateTime.now().toInstant())
 )

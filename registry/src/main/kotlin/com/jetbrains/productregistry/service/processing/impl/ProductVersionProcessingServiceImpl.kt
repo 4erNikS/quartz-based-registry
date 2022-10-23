@@ -34,8 +34,18 @@ class ProductVersionProcessingServiceImpl(
     }
 
     override fun loadDistrInfoForVersion(version: ProductVersion) {
-        val distrInfo = distrLoadingService.getLinuxDistributiveInfoJson(URL(version.distrLink))
-        TODO("Not yet implemented")
+        try {
+            productVersionDataService.finishVersionProcessing(
+                distrLoadingService.getLinuxDistributiveInfoJson(
+                    URL(version.distrLink)
+                ),
+                version
+            )
+        } catch (e:Exception) {
+            log.error("Error happened during processing version ${version.versionCode}", e)
+            productVersionDataService.freeVersionForProcessingInCaseOfError(version)
+
+        }
     }
 
 }

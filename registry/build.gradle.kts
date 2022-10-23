@@ -27,6 +27,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-quartz")
     implementation("org.springframework:spring-context-support:5.3.21")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 //    client
     implementation("commons-io:commons-io:2.11.0")
 //    compression lib
@@ -42,22 +43,24 @@ dependencies {
     implementation("org.quartz-scheduler:quartz:2.3.2")
 //    tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:testcontainers:1.17.5")
+    testImplementation("org.testcontainers:postgresql:1.17.5")
 }
 
-//tasks {
-//    test {
-//        useJUnitPlatform()
-//        testLogging {
-//            events("failed", "passed", "started")
-//        }
-//    }
-//}
+springBoot {
+    mainClass.value("com.jetbrains.productregistry.App")
+}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "11"
     }
+}
+
+tasks.withType<Test> {
+    // use JUnit Platform for unit tests.
+    useJUnitPlatform()
 }
 
 

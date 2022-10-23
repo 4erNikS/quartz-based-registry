@@ -1,5 +1,6 @@
 package com.jetbrains.productregistry.model.persitence
 
+import com.sun.istack.NotNull
 import java.sql.Timestamp
 import java.time.ZonedDateTime
 import javax.persistence.*
@@ -12,7 +13,7 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "products")
-data class Product(
+class Product(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long = 0,
@@ -22,12 +23,12 @@ data class Product(
      * E.g. AC (AppCode), CL (CLion)
      */
     @Column(unique=true)
-    val code: String,
+    var code: String = "",
 
     /**
      * Full name of a product
      */
-    val name: String,
+    var name: String = "",
 
     /**
      * Lock attr to avoid several jobs

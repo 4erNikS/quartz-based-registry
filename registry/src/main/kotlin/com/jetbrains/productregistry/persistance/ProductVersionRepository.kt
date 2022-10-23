@@ -13,5 +13,5 @@ interface ProductVersionRepository: JpaRepository<ProductVersion, Long> {
     fun findProductVersionByVersionCode(versionCode: String): ProductVersion?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    fun findFirstByLockOrderAndStatusByLastUpdatedDesc(lock: Boolean, status: VersionProcessingStatus): ProductVersion?
+    fun findFirstByLockAndStatusOrderByLastUpdatedDesc(lock: Boolean, status: VersionProcessingStatus): ProductVersion?
 }

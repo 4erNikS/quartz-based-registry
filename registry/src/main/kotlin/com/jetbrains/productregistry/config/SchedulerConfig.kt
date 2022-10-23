@@ -1,6 +1,9 @@
 package com.jetbrains.productregistry.config
 
+import com.jetbrains.productregistry.jobs.ProductScanJob
 import com.jetbrains.productregistry.jobs.ProductVersionScanJob
+import com.jetbrains.productregistry.jobs.VersionInfoUpdateJob
+import com.jetbrains.productregistry.properties.ScheduleProperties
 import liquibase.integration.spring.SpringLiquibase
 import org.quartz.*
 import org.quartz.SimpleScheduleBuilder.simpleSchedule
@@ -26,7 +29,9 @@ import javax.sql.DataSource
 @Configuration
 @EnableAsync
 @EnableScheduling
-class SchedulerConfig {
+class SchedulerConfig(
+    private val schedulerProperties: ScheduleProperties
+) {
     @Bean
     fun jobFactory(
         applicationContext: ApplicationContext?,
@@ -65,7 +70,8 @@ class SchedulerConfig {
     fun scheduler(factory: SchedulerFactoryBean): Scheduler? {
         val scheduler: Scheduler = factory.scheduler
         scheduler.start()
-        scheduler.scheduleVersionProcessingJob()
+        scheduler.scheduleProductProcessingJob()
+        scheduler.scheduleProductVersionsProcessingJob()
         return scheduler
     }
 
@@ -73,25 +79,53 @@ class SchedulerConfig {
      * Configuration for non-concurrent
      * job for loading information about possible products
      */
-    private fun Scheduler.scheduleVersionProcessingJob() {
+    private fun Scheduler.scheduleProductProcessingJob() {
+        scheduleRegistryJob(schedulerProperties.productLoadSecInterval, PRODUCT_JOB_GROUP, ProductScanJob::class.java)
+    }
+
+    /**
+     * Configuration job for loading information
+     * about possible one of the product's versions
+     */
+    private fun Scheduler.scheduleProductVersionsProcessingJob() {
+        scheduleRegistryJob(schedulerProperties.versionLoadSecInterval, PRODUCT_VERSIONS_JOB_GROUP, ProductVersionScanJob::class.java)
+    }
+
+    /**
+     * Job configuration for loading information
+     * about one specific distributive
+     */
+    private fun Scheduler.scheduleProductDistrProcessingJob() {
+        scheduleRegistryJob(schedulerProperties.distrInfoSecInterval, PRODUCT_DISTR_JOB_GROUP, VersionInfoUpdateJob::class.java)
+    }
+
+    private fun <T: Job> Scheduler.scheduleRegistryJob(
+        interval: Int, group: String,
+        jobClass: Class<T>
+    ) {
         val id = UUID.randomUUID().toString()
 
-        val job = JobBuilder.newJob(ProductVersionScanJob::class.java)
+        val job = JobBuilder.newJob(jobClass)
             .withIdentity(
                 id,
-                "groupName"
+                group
             )
             .requestRecovery(true)
             .build()
 
         val trigger: Trigger = TriggerBuilder.newTrigger()
             .forJob(job)
-            .withIdentity("$id-trigger", "groupName")
+            .withIdentity("$id-trigger", group)
             .startNow()
             .withSchedule(
-                simpleSchedule().repeatForever().withIntervalInSeconds(10)
+                simpleSchedule()
+                    .repeatForever()
+                    .withIntervalInSeconds(interval)
             )
             .build()
         this.scheduleJob(job, trigger)
     }
 }
+private const val PRODUCT_JOB_GROUP = "productJobs"
+private const val PRODUCT_VERSIONS_JOB_GROUP = "versionJobs"
+private const val PRODUCT_DISTR_JOB_GROUP = "distrJobs"

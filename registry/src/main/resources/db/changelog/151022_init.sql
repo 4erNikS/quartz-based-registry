@@ -1,10 +1,11 @@
+CREATE SEQUENCE hibernate_sequence START 1 INCREMENT 1;
+
 CREATE TABLE IF NOT EXISTS products(
     id BIGSERIAL PRIMARY KEY
     , code VARCHAR(10)
     , name VARCHAR(50)
     , lock BOOLEAN
     , last_updated TIMESTAMP NOT NULL DEFAULT NOW()
-
 );
 
 CREATE TABLE IF NOT EXISTS versions(

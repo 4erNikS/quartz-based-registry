@@ -32,7 +32,13 @@ class ProductVersionScanJob: Job {
         log.info("Starting job for retrieving available information about versions")
         productProcessingService.getProductForVersioningScan()?.let {
             log.info("Updating information about verions for product with code: ${it.code}")
-            versionProcessingService.registerNewProductVersions(it)
+            try {
+                versionProcessingService.registerNewProductVersions(it)
+                productProcessingService.freeProductForVersioningScan(it.id)
+            } catch (e: Exception) {
+                productProcessingService.freeProductForVersioningScan(it.id)
+                throw e
+            }
             return
         }
         log.warn("Have no available products for scan. Skipping this this schedule run")

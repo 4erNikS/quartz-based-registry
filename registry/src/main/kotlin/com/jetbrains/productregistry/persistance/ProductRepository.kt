@@ -12,5 +12,5 @@ interface ProductRepository: JpaRepository<Product, Long> {
     fun findProductByCode(code: String): Product?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    fun findFirstByLockOrderByLastUpdatedDesc(lock: Boolean): Product?
+    fun findFirstByLockOrderByLastUpdatedAsc(lock: Boolean): Product?
 }

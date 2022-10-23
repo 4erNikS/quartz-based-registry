@@ -26,3 +26,8 @@ spring:
 client:
   productsInfoUrl: "https://data.services.jetbrains.com/products"
   productReleaseInfoUrl: "https://data.services.jetbrains.com/products?release.type=eap,rc,release&fields=code,releases&code="
+
+schedule:
+  productLoadSecInterval: 3600
+  versionLoadSecInterval: 1800
+  distrInfoSecInterval: 600
